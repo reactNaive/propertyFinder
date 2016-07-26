@@ -2,7 +2,6 @@ import React, { Component, PropTypes } from 'react';
 
 import { Button, Form, Input } from 'antd';
 import super_agent from 'superagent';
-import Upload from './Upload';
 
 const createForm = Form.create;
 const FormItem = Form.Item;
@@ -14,14 +13,6 @@ function noop() {
 }
 
 let BasicDemo = React.createClass({
-  getInitialState(){
-    this.id = 0;
-    this.imgList = [];
-    return {
-      id: 0,
-    }
-  },
-
   handleReset(e) {
     e.preventDefault();
     this.props.form.resetFields();
@@ -46,9 +37,7 @@ let BasicDemo = React.createClass({
         region: value.region,
         type: value.type,
         unit_price: value.unit_price,
-        wc: value.wc,
-        fig_urls: this.imgList
-      }
+        wc: value.wc}
       ];
       data=JSON.stringify(data);
       $.ajax({
@@ -74,127 +63,230 @@ let BasicDemo = React.createClass({
       });
 
       console.log('Submit!!!');
+
+
+
     });
   },
 
-  getID() {
-    var time = new Date().getTime();
-    // this.setState({id: time});
-    this.id = time;
-    this.props.form.setFieldsValue({'id': time});
+  userExists(rule, value, callback) {
+    if (!value) {
+      callback();
+    } else {
+      setTimeout(() => {
+        if (value === 'JasonWood') {
+          callback([new Error('抱歉，该用户名已被占用。')]);
+        } else {
+          callback();
+        }
+      }, 800);
+    }
   },
 
-  editImg(list) {
-    this.imgList = list;
+  checkPass(rule, value, callback) {
+    const { validateFields } = this.props.form;
+    if (value) {
+      validateFields(['rePasswd'], { force: true });
+    }
+    callback();
+  },
+
+  checkPass2(rule, value, callback) {
+    const { getFieldValue } = this.props.form;
+    if (value && value !== getFieldValue('passwd')) {
+      callback('两次输入密码不一致！');
+    } else {
+      callback();
+    }
   },
 
   render() {
     const { getFieldProps, getFieldError, isFieldValidating } = this.props.form;
-    const formItemLayout = {
-      labelCol: { span: 7 },
-      wrapperCol: { span: 12 },
-    };
-    const therule={
+    const nameProps = getFieldProps('name', {
       rules: [
-        { type: "integer", required: true,  },
+        { required: true, min: 5, message: '用户名至少为 5 个字符' },
+        { validator: this.userExists },
       ],
-    };
-    const therule1={
+    });
+
+    const therule={
       rules: [
         { required: true,  },
       ],
     }
+
+
+
+
+    const emailProps = getFieldProps('email', {
+      validate: [{
+        rules: [
+          { required: true },
+        ],
+        trigger: 'onBlur',
+      }, {
+        rules: [
+          { type: 'email', message: '请输入正确的邮箱地址' },
+        ],
+        trigger: ['onBlur', 'onChange'],
+      }],
+    });
+    const passwdProps = getFieldProps('passwd', {
+      rules: [
+        { required: true, whitespace: true, message: '请填写密码' },
+        { validator: this.checkPass },
+      ],
+    });
+    const rePasswdProps = getFieldProps('rePasswd', {
+      rules: [{
+        required: true,
+        whitespace: true,
+        message: '请再次输入密码',
+      }, {
+        validator: this.checkPass2,
+      }],
+    });
+    const textareaProps = getFieldProps('textarea', {
+      rules: [
+        { required: true, message: '真的不打算写点什么吗？' },
+      ],
+    });
+    const formItemLayout = {
+      labelCol: { span: 7 },
+      wrapperCol: { span: 12 },
+    };
     return (
       <Form horizontal form={this.props.form}>
-
         <FormItem
           {...formItemLayout}
-          label="名字"
+          label="id"
+          hasFeedback
+          help={isFieldValidating('id') ? '校验中...' : (getFieldError('name') || []).join(', ')}
         >
-          <Input {...getFieldProps('name',therule1)} placeholder="实时校验，输入 JasonWood 看看" />
-
+          <Input {...getFieldProps('id',therule)} placeholder="实时校验，输入 JasonWood 看看" />
         </FormItem>
 
         <FormItem
           {...formItemLayout}
-          label="地址"
+          label="addr"
+          hasFeedback
+          help={isFieldValidating('addr') ? '校验中...' : (getFieldError('addr') || []).join(', ')}
         >
-          <Input {...getFieldProps('addr')} placeholder="实时校验，输入 JasonWood 看看" />
+          <Input {...getFieldProps('addr',therule)} placeholder="实时校验，输入 JasonWood 看看" />
         </FormItem>
 
         <FormItem
           {...formItemLayout}
-          label="区县"
+          label="adv"
+          hasFeedback
+          help={isFieldValidating('adv') ? '校验中...' : (getFieldError('addr') || []).join(', ')}
         >
-          <Input {...getFieldProps('region')} placeholder="实时校验，输入 JasonWood 看看" />
-        </FormItem>
-
-        <FormItem
-          {...formItemLayout}
-          label="优势"
-        >
-          <Input {...getFieldProps('adv')} placeholder="实时校验，输入 JasonWood 看看" />
-        </FormItem>
-
-        <FormItem
-          {...formItemLayout}
-          label="面积"
-        >
-          <Input {...getFieldProps('area')} placeholder="实时校验，输入 JasonWood 看看" />
-        </FormItem>
-
-        <FormItem
-          {...formItemLayout}
-          label="卧室数量"
-        >
-          <Input {...getFieldProps('bedroom')} placeholder="实时校验，输入 JasonWood 看看" />
-        </FormItem>
-
-        <FormItem
-          {...formItemLayout}
-          label="客厅数量"
-        >
-          <Input {...getFieldProps('livingroom')} placeholder="实时校验，输入 JasonWood 看看" />
-        </FormItem>
-
-        <FormItem
-          {...formItemLayout}
-          label="厕所数量"
-        >
-          <Input {...getFieldProps('wc')} placeholder="实时校验，输入 JasonWood 看看" />
-        </FormItem>
-
-        <FormItem
-          {...formItemLayout}
-          label="房型"
-        >
-          <Input {...getFieldProps('type')} placeholder="实时校验，输入 JasonWood 看看" />
-        </FormItem>
-
-        <FormItem
-          {...formItemLayout}
-          label="价格"
-        >
-          <Input {...getFieldProps('price_1')} placeholder="实时校验，输入 JasonWood 看看" />
-        </FormItem>
-
-        <FormItem
-          {...formItemLayout}
-          label="单价"
-        >
-          <Input {...getFieldProps('unit_price')} placeholder="实时校验，输入 JasonWood 看看" />
+          <Input {...getFieldProps('adv',therule)} placeholder="实时校验，输入 JasonWood 看看" />
         </FormItem>
 
 
         <FormItem
           {...formItemLayout}
-          label="ID"
+          label="area"
+          hasFeedback
+          help={isFieldValidating('area') ? '校验中...' : (getFieldError('addr') || []).join(', ')}
         >
-          <Input {...getFieldProps('id',therule)} placeholder="输入" />
-          <Button type="primary" onClick={() => this.getID()}>获取ID</Button>
+          <Input {...getFieldProps('area',therule)} placeholder="实时校验，输入 JasonWood 看看" />
         </FormItem>
 
-        <Upload id={this.id} editImg={(list) => this.editImg(list)}/>
+
+        <FormItem
+          {...formItemLayout}
+          label="bedroom"
+          hasFeedback
+          help={isFieldValidating('bedroom') ? '校验中...' : (getFieldError('addr') || []).join(', ')}
+        >
+          <Input {...getFieldProps('bedroom',therule)} placeholder="实时校验，输入 JasonWood 看看" />
+        </FormItem>
+
+
+        <FormItem
+          {...formItemLayout}
+          label="livingroom"
+          hasFeedback
+          help={isFieldValidating('livingroom') ? '校验中...' : (getFieldError('addr') || []).join(', ')}
+        >
+          <Input {...getFieldProps('livingroom',therule)} placeholder="实时校验，输入 JasonWood 看看" />
+        </FormItem>
+
+
+
+        <FormItem
+          {...formItemLayout}
+          label="name"
+          hasFeedback
+          help={isFieldValidating('name') ? '校验中...' : (getFieldError('addr') || []).join(', ')}
+        >
+          <Input {...getFieldProps('name',therule)} placeholder="实时校验，输入 JasonWood 看看" />
+        </FormItem>
+
+
+
+        <FormItem
+          {...formItemLayout}
+          label="price_1"
+          hasFeedback
+          help={isFieldValidating('price_1') ? '校验中...' : (getFieldError('addr') || []).join(', ')}
+        >
+          <Input {...getFieldProps('price_1',therule)} placeholder="实时校验，输入 JasonWood 看看" />
+        </FormItem>
+
+
+
+        <FormItem
+          {...formItemLayout}
+          label="region"
+          hasFeedback
+          help={isFieldValidating('region') ? '校验中...' : (getFieldError('addr') || []).join(', ')}
+        >
+          <Input {...getFieldProps('region',therule)} placeholder="实时校验，输入 JasonWood 看看" />
+        </FormItem>
+
+
+
+
+
+        <FormItem
+          {...formItemLayout}
+          label="type"
+          hasFeedback
+          help={isFieldValidating('type') ? '校验中...' : (getFieldError('addr') || []).join(', ')}
+        >
+          <Input {...getFieldProps('type',therule)} placeholder="实时校验，输入 JasonWood 看看" />
+        </FormItem>
+
+        <FormItem
+          {...formItemLayout}
+          label="unit_price"
+          hasFeedback
+          help={isFieldValidating('unit_price') ? '校验中...' : (getFieldError('addr') || []).join(', ')}
+        >
+          <Input {...getFieldProps('unit_price',therule)} placeholder="实时校验，输入 JasonWood 看看" />
+        </FormItem>
+
+
+
+        <FormItem
+          {...formItemLayout}
+          label="wc"
+          hasFeedback
+          help={isFieldValidating('wc') ? '校验中...' : (getFieldError('addr') || []).join(', ')}
+        >
+          <Input {...getFieldProps('wc',therule)} placeholder="实时校验，输入 JasonWood 看看" />
+        </FormItem>
+
+
+
+
+
+
+
+
 
 
         <FormItem wrapperCol={{ span: 12, offset: 7 }}>

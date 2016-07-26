@@ -11,18 +11,14 @@ const MainLayout = ({ children }) => {
       <div className={styles.content}>
         <div className={styles.side}>
           <h2>Filters:</h2>
-          <Link to="/">Add</Link><br />
-          <Link to="/search">Search</Link><br />
-          <Link to="/delete">Delete</Link><br />
-          <Link to="/404">404</Link><br />
+          <Link to="/">添加</Link><br />
+          <Link to="/search">搜索与删除</Link><br />
         </div>
         <div className={styles.main}>
           {children}
         </div>
       </div>
-      <div className={styles.foot}>
-        Built with react, react-router, ant-tool, css-modules, antd...
-      </div>
+
     </div>
   );
 };
@@ -34,5 +30,7 @@ MainLayout.propTypes = {
 export default MainLayout;
 
 /*
-
+ <div className={styles.foot}>
+ Built with react, react-router, ant-tool, css-modules, antd...
+ </div>
  */

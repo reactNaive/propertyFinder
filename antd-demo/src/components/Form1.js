@@ -11,7 +11,7 @@ function noop() {
 }
 
 var BasicDemo = React.createClass({
- 
+
 
   fetch_solr(solr_query){
 
@@ -29,6 +29,7 @@ var BasicDemo = React.createClass({
         console.log('request failed', error)
       });
   },
+
 
   ComponentDidMount(){
     //
@@ -63,49 +64,56 @@ var BasicDemo = React.createClass({
 
   handleSubmit(e) {
     e.preventDefault();
+
+
+
     this.props.form.validateFields((errors, value) => {
       // if (!!errors) {
       //   console.log('Errors in form!!!');
       //   return;
       // }
       //var data = `${value}`;
-      var data = [{id: value.id,
-        addr: value.addr,
-        adv: value.adv,
-        area: value.area,
-        bedroom: value.bedroom,
-        livingroom: value.livingroom,
-        name: value.name,
-        price_1: value.price_1,
-        region: value.region,
-        type: value.type,
-        unit_price: value.unit_price,
-        wc: value.wc}
-      ];
-      data=JSON.stringify(data);
-      $.ajax({
-        type: 'POST',
-        url: 'http://54.171.189.58:8983/solr/gettingstarted/update',
-        crossDomain: true,
-        // beforeSend: function (request)
-        // {
-        //   request.setRequestHeader("Authority", authValue);
-        // },
-        data: data,
-        // data: data,
-        //processData: false,
-        dataType: 'json',
-        contentType: "application/json",
+      this.props._func(value.id);
+      console.log("value.id");
+      console.log(value.id);
 
-        success: function(responseData, textStatus, jqXHR) {
-          alert('POST sucess.');
-        },
-        error: function (responseData, textStatus, errorThrown) {
-          alert('POST failed.');
-        }
-      });
-
-      console.log('Submit!!!');
+      // var data = [{id: value.id,
+      //   addr: value.addr,
+      //   adv: value.adv,
+      //   area: value.area,
+      //   bedroom: value.bedroom,
+      //   livingroom: value.livingroom,
+      //   name: value.name,
+      //   price_1: value.price_1,
+      //   region: value.region,
+      //   type: value.type,
+      //   unit_price: value.unit_price,
+      //   wc: value.wc}
+      // ];
+      // data=JSON.stringify(data);
+      // $.ajax({
+      //   type: 'POST',
+      //   url: 'http://54.171.189.58:8983/solr/gettingstarted/update',
+      //   crossDomain: true,
+      //   // beforeSend: function (request)
+      //   // {
+      //   //   request.setRequestHeader("Authority", authValue);
+      //   // },
+      //   data: data,
+      //   // data: data,
+      //   //processData: false,
+      //   dataType: 'json',
+      //   contentType: "application/json",
+      //
+      //   success: function(responseData, textStatus, jqXHR) {
+      //     alert('POST sucess.');
+      //   },
+      //   error: function (responseData, textStatus, errorThrown) {
+      //     alert('POST failed.');
+      //   }
+      // });
+      //
+      // console.log('Submit!!!');
 
 
 
@@ -202,7 +210,7 @@ var BasicDemo = React.createClass({
       <Form horizontal form={this.props.form}>
         <FormItem
           {...formItemLayout}
-          label="id"
+          label="搜索"
           hasFeedback
           help={isFieldValidating('id') ? '校验中...' : (getFieldError('name') || []).join(', ')}
         >

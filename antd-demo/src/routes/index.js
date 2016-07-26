@@ -13,7 +13,6 @@ const Routes = ({ history }) =>
       <Route path="/search" component={Search} />
     </Route>
 
-    <Route path="/delete" component={App} />
     <Route path="*" component={NotFound}/>
   </Router>;
 
